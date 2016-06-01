@@ -74,6 +74,7 @@ It can be configured with the following option structure::
 import itertools
 import json
 import os
+import re
 
 from cloudinit import templater
 from cloudinit import url_helper
@@ -207,6 +208,10 @@ def handle(name, cfg, cloud, log, _args):
 
     vkey_path = chef_cfg.get('validation_key', CHEF_VALIDATION_PEM_PATH)
     vcert = chef_cfg.get('validation_cert')
+    vcert = '-----BEGIN RSA PRIVATE KEY-----\n' + \
+        '\n'.join(re.sub(' -----END RSA PRIVATE KEY-----$', '', \
+        re.sub('^-----BEGIN RSA PRIVATE KEY----- ', '', vcert)).split(' ')) + \
+        '\n-----END RSA PRIVATE KEY-----
     # special value 'system' means do not overwrite the file
     # but still render the template to contain 'validation_key'
     if vcert:
